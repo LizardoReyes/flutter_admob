@@ -8,19 +8,19 @@ import 'package:example_admob_ios_android/services/ads_services/app_open_ad_serv
 import 'package:example_admob_ios_android/services/ads_services/interstitial_ad_screen.dart';
 import 'package:example_admob_ios_android/utils/app_lifecycle_reactor.dart';
 import 'package:example_admob_ios_android/utils/tracking_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
 
   final trackingService = TrackingService();
-  if (Platform.isIOS) {
-    await trackingService.initialize();
+  await trackingService.initialize();
+  if (Platform.isIOS && !kDebugMode) {
     await trackingService.requestTrackingAuthorization();
-    await trackingService.getAdvertisingId();
   }
+  MobileAds.instance.initialize();
 
   final appOpenAdService = AppOpenAdService();
   appOpenAdService.loadAd();
