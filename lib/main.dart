@@ -13,15 +13,28 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
+  // Por mobile ads y tracking
   WidgetsFlutterBinding.ensureInitialized();
 
-  final trackingService = TrackingService();
-  await trackingService.initialize();
-  if (Platform.isIOS && !kDebugMode) {
-    await trackingService.requestTrackingAuthorization();
-  }
-  MobileAds.instance.initialize();
+  // Tracking (solo iOS)
+  if (Platform.isIOS) {
+    final trackingService = TrackingService();
+    await trackingService.initialize();
 
+    if (!kDebugMode) {
+      await trackingService.requestTrackingAuthorization();
+    }
+  }
+
+  // Ads initialization
+  await MobileAds.instance.initialize();
+  await MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+      testDeviceIds: ['4cfe03b6-ae5f-4d01-8345-d4e8888846c0'],
+    ),
+  );
+
+  // App Open Ad setup
   final appOpenAdService = AppOpenAdService();
   appOpenAdService.loadAd();
   final appLifecycleReactor = AppLifecycleReactor(

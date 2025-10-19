@@ -18,9 +18,6 @@ class _NativeAdScreenState extends State<NativeAdScreen> {
   static const int _adInterval = 5;
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double adHeight = screenHeight < 700 ? 250 : 300;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -35,7 +32,7 @@ class _NativeAdScreenState extends State<NativeAdScreen> {
           itemCount: _getAdjustedItemCount(),
           itemBuilder: (context, index) {
             if (_shouldShowAdAt(index)) {
-              return _buildAdItem(adHeight);
+              return _buildAdItem();
             }
             final contentIndex = _getContentIndex(index);
             return _buildContentItem(contentIndex);
@@ -59,17 +56,22 @@ class _NativeAdScreenState extends State<NativeAdScreen> {
     return index - numberOfAdsBefore;
   }
 
-  Widget _buildAdItem(double adHeight) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: NativeAdService(
-        height: adHeight,
-        templateType: TemplateType.medium,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-          color: Colors.white,
-        ),
-      ),
+  Widget _buildAdItem() {
+    return FutureBuilder(
+      future: Future.delayed(const Duration(milliseconds: 500)), // simula carga
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox(height: 300); // espacio reservado
+        }
+        return NativeAdService(
+          height: MediaQuery.of(context).size.width * 0.75,
+          templateType: TemplateType.medium,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: Colors.white,
+          ),
+        );
+      },
     );
   }
 

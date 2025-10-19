@@ -84,13 +84,22 @@ class _NativeAdServiceState extends State<NativeAdService>
             child: const Center(child: LinearProgressIndicator()),
           );
     }
-    return Container(
-      decoration: widget.decoration,
-      constraints: BoxConstraints(
-        maxHeight: widget.height,
-        minHeight: widget.height,
-      ),
-      child: AdWidget(ad: _nativeAd!),
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Ajusta el alto según el tipo de plantilla
+        final double adHeight = widget.templateType == TemplateType.medium
+            ? 360
+            : 140;
+
+        return Container(
+          height: adHeight,
+          width: constraints.maxWidth,
+          decoration: widget.decoration,
+          clipBehavior: Clip.antiAlias,
+          child: AdWidget(ad: _nativeAd!),
+        );
+      },
     );
   }
 }
